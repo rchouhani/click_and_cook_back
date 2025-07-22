@@ -25,13 +25,14 @@ class CustomUser(AbstractBaseUser):
     USERNAME_FIELD = 'username'
     objects = CustomUserManager()
     
-    
+
 class Recipes(models.Model):
     title = models.CharField(max_length=255)
     cook_time_min = models.IntegerField()
     prep_time_min = models.IntegerField()
     servings = models.IntegerField()
     user = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
+    picture = models.CharField(max_length=1024)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
