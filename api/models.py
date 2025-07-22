@@ -1,14 +1,29 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, username, password=None, **extra_fields):
+        if not username:
+            raise ValueError("Nom d'utilisateur requis")
+        if not password:
+            raise ValueError("Mot de passe requis")
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
 
 
-class CustomUsers(AbstractBaseUser):
+class CustomUser(AbstractBaseUser):
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, unique=True)
-    username = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    
+    USERNAME_FIELD = 'username'
+    objects = CustomUserManager()
     
     
 class Recipes(models.Model):
@@ -16,7 +31,7 @@ class Recipes(models.Model):
     cook_time_min = models.IntegerField()
     prep_time_min = models.IntegerField()
     servings = models.IntegerField()
-    user = models.ForeignKey(CustomUsers, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -29,13 +44,13 @@ class Ingredients(models.Model):
     
 
 class Follows(models.Model):
-    following_user= models.ForeignKey(CustomUsers, on_delete=models.DO_NOTHING)
-    followed_user= models.ForeignKey(CustomUsers, on_delete=models.DO_NOTHING)
+    following_user= models.ForeignKey(CustomUser, related_name='following', on_delete=models.DO_NOTHING)
+    followed_user= models.ForeignKey(CustomUser, related_name='followed', on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
 
     
 class Likes(models.Model):
-    user = models.ForeignKey(CustomUsers, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
     recipe = models.ForeignKey(Recipes, on_delete=models.DO_NOTHING)
     
 
