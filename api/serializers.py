@@ -22,13 +22,19 @@ class CustomUserSerializer(serializers.ModelSerializer):
         
         
 class RecipesSerializer(serializers.ModelSerializer):
+
     ingredients = IngredientsSerializer(many = True)
     steps = StepsSerializer(many = True)
     user_detail = CustomUserSerializer(source='user', read_only=True)
+    likes_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Recipes
-        fields = ['title', 'cook_time_min', 'prep_time_min', 'servings', 'user', 'user_detail']
-        
+        fields = ['title', 'cook_time_min', 'prep_time_min', 'servings','likes_count', 'user', 'user_detail']
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()    
+    
     def create(self, validated_data):
         ingredients_data = validated_data.pop(Ingredients)        
         steps_data = validated_data.pop(Steps)

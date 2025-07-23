@@ -52,7 +52,7 @@ class Follows(models.Model):
     
 class Likes(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
-    recipe = models.ForeignKey(Recipes, on_delete=models.DO_NOTHING)
+    recipe = models.ForeignKey(Recipes, related_name='likes', on_delete=models.DO_NOTHING)
     
 
 class Steps(models.Model):
