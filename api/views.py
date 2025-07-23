@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate
 from .models import Recipes, CustomUser
 from .serializers import RecipesSerializer, CustomUserSerializer
 
-# from login_required import login_not_required
+from login_required import login_not_required
 
 # @login_not_required
 class CustomUserViewSet(viewsets.ModelViewSet):
