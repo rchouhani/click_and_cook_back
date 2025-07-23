@@ -61,6 +61,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_HEADERS = True
 
 ROOT_URLCONF = 'click_and_cook_back.urls'
 
