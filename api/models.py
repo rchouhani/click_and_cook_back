@@ -9,7 +9,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Mot de passe requis")
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
 
@@ -39,7 +39,7 @@ class Recipes(models.Model):
     
 class Ingredients(models.Model):
     title = models.CharField(max_length=255)
-    quantity = models.IntegerField()
+    quantity = models.FloatField()
     unity = models.CharField(max_length=12)
     recipe = models.ForeignKey(Recipes, related_name="ingredients", on_delete=models.CASCADE)
     
@@ -56,5 +56,5 @@ class Likes(models.Model):
     
 
 class Steps(models.Model):
-    description = models.CharField()
+    description = models.CharField(max_length=1024)
     recipe = models.ForeignKey(Recipes, related_name="steps", on_delete=models.CASCADE)
