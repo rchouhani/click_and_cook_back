@@ -31,7 +31,7 @@ class Recipes(models.Model):
     cook_time_min = models.IntegerField()
     prep_time_min = models.IntegerField()
     servings = models.IntegerField()
-    user = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CustomUser, on_delete=models.PROTECT)
     picture = models.CharField(max_length=1024)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -41,20 +41,20 @@ class Ingredients(models.Model):
     title = models.CharField(max_length=255)
     quantity = models.IntegerField()
     unity = models.CharField(max_length=12)
-    recipe = models.ForeignKey(Recipes, related_name="ingredients", on_delete=models.DO_NOTHING)
+    recipe = models.ForeignKey(Recipes, related_name="ingredients", on_delete=models.CASCADE)
     
 
 class Follows(models.Model):
-    following_user= models.ForeignKey(CustomUser, related_name='following', on_delete=models.DO_NOTHING)
-    followed_user= models.ForeignKey(CustomUser, related_name='followed', on_delete=models.DO_NOTHING)
+    following_user= models.ForeignKey(CustomUser, related_name='following', on_delete=models.CASCADE)
+    followed_user= models.ForeignKey(CustomUser, related_name='followed', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     
 class Likes(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
-    recipe = models.ForeignKey(Recipes, related_name='likes', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipes, related_name='likes', on_delete=models.CASCADE)
     
 
 class Steps(models.Model):
     description = models.CharField()
-    recipe = models.ForeignKey(Recipes, related_name="steps", on_delete=models.DO_NOTHING)
+    recipe = models.ForeignKey(Recipes, related_name="steps", on_delete=models.CASCADE)

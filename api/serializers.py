@@ -30,14 +30,14 @@ class RecipesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipes
-        fields = ['title', 'cook_time_min', 'prep_time_min', 'servings','likes_count', 'user', 'user_detail']
+        fields = ['title', 'cook_time_min', 'prep_time_min', 'servings','ingredients','steps','picture','likes_count', 'user', 'user_detail']
 
     def get_likes_count(self, obj):
         return obj.likes.count()    
     
     def create(self, validated_data):
-        ingredients_data = validated_data.pop(Ingredients)        
-        steps_data = validated_data.pop(Steps)
+        ingredients_data = validated_data.pop('ingredients')        
+        steps_data = validated_data.pop('steps')
         
         recipe = Recipes.objects.create(**validated_data)
         
@@ -48,3 +48,15 @@ class RecipesSerializer(serializers.ModelSerializer):
             Steps.objects.create(recipe=recipe, **step_data)
             
         return recipe
+    
+class LikesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Likes
+        fields = '__all__'
+
+class FollowsSerializer(serializers.ModelSerializer):
+    following_user_detail = CustomUserSerializer(source='following_user', read_only=True)
+    
+    class Meta:
+        model = Follows
+        fields = ['following_user', 'followed_user', 'following_user_detail']
