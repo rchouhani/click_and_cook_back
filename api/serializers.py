@@ -19,6 +19,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['firstname', 'lastname', 'email', 'username', 'password']
+    
+    def create(self, validated_data):
+        return CustomUser.objects.create_user(**validated_data)
         
         
 class RecipesSerializer(serializers.ModelSerializer):
@@ -60,3 +63,4 @@ class FollowsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follows
         fields = ['following_user', 'followed_user', 'following_user_detail']
+
