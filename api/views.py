@@ -3,6 +3,7 @@ from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 
 from .models import Recipes, CustomUser
@@ -12,6 +13,12 @@ from .serializers import RecipesSerializer, CustomUserSerializer
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset=CustomUser.objects.all()
     serializer_class = CustomUserSerializer
+    
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        else: 
+            return [IsAuthenticated()]
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
