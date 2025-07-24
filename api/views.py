@@ -76,8 +76,17 @@ class LikeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         
-
-
 class FollowsViewSet(viewsets.ModelViewSet):
     queryset = Follows.objects.all()
     serializer_class = FollowsSerializer
+
+    def create(self, request):
+        following_user = request.data.get('following_user')
+        followed_user = request.data.get('followed_user')
+
+        follow, created = Follows.objects.get_or_create(following_user_id=following_user, followed_user_id=followed_user)
+        if not created:
+            return Response({'Tu ne peux pas suivre un utilisateur deux fois'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            serializer = self.get_serializer(follow)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
