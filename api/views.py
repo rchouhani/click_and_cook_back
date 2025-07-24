@@ -13,7 +13,7 @@ from .serializers import RecipesSerializer, CustomUserSerializer
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset=CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    
+
     def get_permissions(self):
         if self.action == 'create':
             return [AllowAny()]
@@ -27,6 +27,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
