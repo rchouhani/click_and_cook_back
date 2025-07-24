@@ -68,6 +68,10 @@ class LikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Likes
         fields = '__all__'
+        
+            
+            
+            
 
 class FollowsSerializer(serializers.ModelSerializer):
     following_user_detail = CustomUserSerializer(source='following_user', read_only=True)
@@ -75,4 +79,3 @@ class FollowsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follows
         fields = ['following_user', 'followed_user', 'following_user_detail']
-
