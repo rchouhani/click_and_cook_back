@@ -42,14 +42,21 @@ class RecipesSerializer(serializers.ModelSerializer):
     steps = StepsSerializer(many = True)
     user_detail = CustomUserSerializer(source='user', read_only=True)
     likes_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipes
-        fields = ['title', 'cook_time_min', 'prep_time_min', 'servings','ingredients','steps','picture','likes_count', 'user', 'user_detail']
+        fields = ['title', 'cook_time_min', 'prep_time_min', 'servings','ingredients','steps','picture','likes_count','is_liked', 'user', 'user_detail']
 
     def get_likes_count(self, obj):
         return obj.likes.count()    
     
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and request.user:
+            return  obj.likes.filter(user=request.user).exists()
+        return False
+
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')        
         steps_data = validated_data.pop('steps')
