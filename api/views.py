@@ -76,6 +76,18 @@ class LikeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         
+    def destroy(self, request, pk=None):
+        user = request.data.get('user')
+        recipe = request.data.get('recipe')
+        
+        deleted_like = Likes.objects.get(user_id=user, recipe_id=recipe)
+        deleted_like.delete()
+        return Response({"Tu viens d'unlike"}, status=status.HTTP_200_OK)
+            
+        
+        
+        
+        
 class FollowsViewSet(viewsets.ModelViewSet):
     queryset = Follows.objects.all()
     serializer_class = FollowsSerializer
@@ -83,10 +95,20 @@ class FollowsViewSet(viewsets.ModelViewSet):
     def create(self, request):
         following_user = request.data.get('following_user')
         followed_user = request.data.get('followed_user')
-
+        
         follow, created = Follows.objects.get_or_create(following_user_id=following_user, followed_user_id=followed_user)
         if not created:
             return Response({'Tu ne peux pas suivre un utilisateur deux fois'}, status=status.HTTP_204_NO_CONTENT)
         else:
             serializer = self.get_serializer(follow)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+    
+    def destroy(self, request, pk=None):
+         following_user = request.data.get('following_user')
+         followed_user = request.data.get('followed_user')
+        
+         deleted_follow = Follows.objects.get(following_user_id=following_user, followed_user_id=followed_user)
+         deleted_follow.delete()
+         return Response({"Tu viens d'unfollow"}, status=status.HTTP_200_OK)
+        
