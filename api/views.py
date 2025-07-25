@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from rest_framework import viewsets, serializers, status
+from rest_framework import viewsets, serializers, status, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Recipes, CustomUser, Likes, Follows
 from .serializers import RecipesSerializer, CustomUserSerializer, LikesSerializer, FollowsSerializer
@@ -24,6 +25,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset= Recipes.objects.all()
     serializer_class = RecipesSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['is_liked', 'title']
 
 
 class LoginView(APIView):
@@ -118,4 +121,3 @@ class FollowsViewSet(viewsets.ModelViewSet):
          deleted_follow = Follows.objects.get(following_user_id=following_user, followed_user_id=followed_user)
          deleted_follow.delete()
          return Response({"Tu viens d'unfollow"}, status=status.HTTP_200_OK)
-        
