@@ -60,6 +60,16 @@ class LoginView(APIView):
         return response
     
     
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        # token = request.META.get('HTTP_AUTHORIZATION')
+        
+        deleted_token = Token.objects.get(user = request.user)
+        deleted_token.delete()
+        return Response({'Vous êtes déconnecté'}, status=status.HTTP_200_OK)
+    
+    
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Likes.objects.all()
     serializer_class = LikesSerializer
@@ -84,9 +94,6 @@ class LikeViewSet(viewsets.ModelViewSet):
         deleted_like.delete()
         return Response({"Tu viens d'unlike"}, status=status.HTTP_200_OK)
             
-        
-        
-        
         
 class FollowsViewSet(viewsets.ModelViewSet):
     queryset = Follows.objects.all()
