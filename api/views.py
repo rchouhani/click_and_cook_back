@@ -77,8 +77,13 @@ class LikeViewSet(viewsets.ModelViewSet):
         
         
 class FollowsViewSet(viewsets.ModelViewSet):
-    queryset = Follows.objects.all()
     serializer_class = FollowsSerializer
+
+
+    def get_queryset(self):
+        user = self.request.user
+
+        return Follows.objects.filter(user=user)
 
     def create(self, request):
         following_user = request.data.get('following_user')
