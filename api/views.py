@@ -1,12 +1,11 @@
 from django.shortcuts import render
-from rest_framework import viewsets, serializers, status, filters
+from rest_framework import viewsets, serializers, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from django_filters.rest_framework import DjangoFilterBackend
-
 from .models import Recipes, CustomUser, Likes, Follows
 from .serializers import RecipesSerializer, CustomUserSerializer, LikesSerializer, FollowsSerializer
 
@@ -20,17 +19,32 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         else: 
             return [IsAuthenticated()]
+        
 
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+     user = request.user
+     return Response({
+        "user": {
+            "username": user.username,
+        }
+    })
+    
 
 class RecipesViewSet(viewsets.ModelViewSet):
-    queryset= Recipes.objects.all()
+    queryset= Recipes.objects.all().order_by('-created_at')[:3]
     serializer_class = RecipesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['is_liked', 'title']
+    filterset_fields = ['created_at']    
 
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
@@ -42,9 +56,9 @@ class LoginView(APIView):
         if not user.check_password(password):
             raise serializers.ValidationError("mot de passe incorrect")
         
-        
         token, created = Token.objects.get_or_create(user=user)
         response = Response ({
+                "auth_token": token.key,
                 "message": "Connexion Réussie",
                 "user": {
                 "username": user.username,
@@ -53,12 +67,14 @@ class LoginView(APIView):
         })
         
         response.set_cookie(
-            "auth_token",
-            token.key,
+            # "auth_token",
+            # token.key,
+            key='auth_token',
+            value=token.key,
             max_age=3600,
             httponly=True,
             secure=False,
-            samesite="Strict"
+            samesite="Lax"
         )
         return response
     
