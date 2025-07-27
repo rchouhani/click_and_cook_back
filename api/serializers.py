@@ -34,7 +34,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-        
+ 
         
 class RecipesSerializer(serializers.ModelSerializer):
 
@@ -70,6 +70,7 @@ class RecipesSerializer(serializers.ModelSerializer):
             Steps.objects.create(recipe=recipe, **step_data)
             
         return recipe
+ 
     
 class LikesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,9 +78,6 @@ class LikesSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
             
-            
-            
-
 class FollowsSerializer(serializers.ModelSerializer):
     following_user_detail = CustomUserSerializer(source='following_user', read_only=True)
     
