@@ -34,7 +34,7 @@ class CurrentUserView(APIView):
     
 
 class RecipesViewSet(viewsets.ModelViewSet):
-    queryset= Recipes.objects.all().order_by('-created_at')[:3]
+    queryset= Recipes.objects.all().order_by('-created_at')
     serializer_class = RecipesSerializer
     permission_classes = [permissions.IsAuthenticated]
     
