@@ -8,6 +8,7 @@ router.register(r'recipes', RecipesViewSet, basename='recipes')
 router.register(r'user', CustomUserViewSet, basename='user')
 router.register(r'likes', LikeViewSet, basename='likes')
 router.register(r'follows', FollowsViewSet, basename='follows')
+router.register(r'myrecipes', RecipesViewSet, basename="myrecipes")
 
 urlpatterns = [
     path('api/', include(router.urls)),
