@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from rest_framework import viewsets, serializers, status, permissions
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 from .models import Recipes, CustomUser, Likes, Follows
 from .serializers import RecipesSerializer, CustomUserSerializer, LikesSerializer, FollowsSerializer
 
@@ -47,7 +49,22 @@ class RecipesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['created_at']    
+    filterset_fields = ['created_at']
+
+    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[^/.]+)')
+    def by_user(self, request, user_id=None):
+        """Récupère les recettes d'un utilisateur spécifique"""
+        user = get_object_or_404(CustomUser, id=user_id)
+        recipes = self.queryset.filter(user=user)
+        
+        # SI BESOIN DE METTRE LA PAGINATION : 
+        # page = self.paginate_queryset(recipes)
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(recipes, many=True)
+        return Response(serializer.data)
 
 
 class LoginView(APIView):
