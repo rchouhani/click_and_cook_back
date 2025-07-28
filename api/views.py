@@ -25,20 +25,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = CustomUserSerializer
     
-    def get_queryset(self):
-        user = self.request.user
-        return CustomUser.objects.all()
-    
-    def create(self, request):
-        
-    
-        def get(self, request):
-            user = request.user
-            return Response({
+    def get(self, request):
+        user = request.user
+        return Response({
             "user": {
-            "username": user.username
+                "username": user.username
             }
     })
     
