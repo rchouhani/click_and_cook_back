@@ -61,6 +61,21 @@ class RecipesViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(recipes, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='liked-by/(?P<user_id>[^/.]+)')
+    def liked_by_user(self, request, user_id=None):
+        """Récupère les recettes likées par un utilisateur spécifique (par ID)"""
+        user = get_object_or_404(CustomUser, id=user_id)
+        
+        liked_recipes = self.queryset.filter(likes__user=user).distinct()
+        
+        page = self.paginate_queryset(liked_recipes)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(liked_recipes, many=True)
+        return Response(serializer.data)
 
 
 

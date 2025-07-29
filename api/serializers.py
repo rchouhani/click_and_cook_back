@@ -81,7 +81,8 @@ class LikesSerializer(serializers.ModelSerializer):
             
 class FollowsSerializer(serializers.ModelSerializer):
     following_user_detail = CustomUserSerializer(source='following_user', read_only=True)
+    followed_user_detail = CustomUserSerializer(source='followed_user', read_only=True)
     
     class Meta:
         model = Follows
-        fields = ['following_user', 'followed_user', 'following_user_detail']
+        fields = ['following_user', 'followed_user_detail', 'following_user_detail']
