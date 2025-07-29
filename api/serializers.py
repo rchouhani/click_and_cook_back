@@ -53,8 +53,9 @@ class RecipesSerializer(serializers.ModelSerializer):
     
     def get_is_liked(self, obj):
         request = self.context.get('request')
-        if request and request.user:
-            return  obj.likes.filter(user=request.user).exists()
+        user = getattr(request, 'user', None)
+        if user and user.is_authenticated:
+            return  obj.likes.filter(user=user).exists()
         return False
 
     def create(self, validated_data):
