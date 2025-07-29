@@ -40,7 +40,9 @@ class CurrentUserView(APIView):
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset= Recipes.objects.all().order_by('-created_at')
     serializer_class = RecipesSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
+    # permission_classes = [permissions.IsAuthenticated]
+
     
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['created_at']
@@ -59,6 +61,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(recipes, many=True)
         return Response(serializer.data)
+
 
 
 class LoginView(APIView):
