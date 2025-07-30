@@ -23,7 +23,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return CustomUser.objects.create_user(**validated_data)
     
-    def upadte(self, instance, validated_data):
+    def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
 
         for attr, value in validated_data.items():
@@ -37,7 +37,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
  
         
 class RecipesSerializer(serializers.ModelSerializer):
-
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     ingredients = IngredientsSerializer(many = True)
     steps = StepsSerializer(many = True)
     user_detail = CustomUserSerializer(source='user', read_only=True)
@@ -59,8 +59,14 @@ class RecipesSerializer(serializers.ModelSerializer):
         return False
 
     def create(self, validated_data):
+        # request = self.context.get('request')
         ingredients_data = validated_data.pop('ingredients')        
         steps_data = validated_data.pop('steps')
+        
+        # user = request.user if request else None
+        
+        # if not user or not user.is_authenticated:
+        #     raise serializers.ValidationError('Utilisateur non authentifié.')
         
         recipe = Recipes.objects.create(**validated_data)
         
