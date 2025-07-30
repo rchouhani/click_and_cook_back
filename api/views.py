@@ -42,10 +42,15 @@ class RecipesViewSet(viewsets.ModelViewSet):
     serializer_class = RecipesSerializer
     permission_classes = [AllowAny]
     # permission_classes = [permissions.IsAuthenticated]
-
-    
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['created_at']
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
     @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[^/.]+)')
     def by_user(self, request, user_id=None):
@@ -76,6 +81,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(liked_recipes, many=True)
         return Response(serializer.data)
+    
 
 
 
