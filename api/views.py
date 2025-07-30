@@ -152,13 +152,16 @@ class LikeViewSet(viewsets.ModelViewSet):
         
     def destroy(self, request, pk=None):
         user = request.user
-        recipe = request.data.get('recipe')
+        recipe_id = pk
         
-        deleted_like = Likes.objects.get(user=user, recipe_id=recipe)
-        deleted_like.delete()
-        return Response({"Tu viens d'unlike"}, status=status.HTTP_200_OK)
-            
-        
+        try:
+            like_to_delete = Likes.objects.get(user=user, recipe_id=recipe_id)
+            like_to_delete.delete()
+            return Response({"message": "Le like a bien été supprimé"}, status=status.HTTP_204_NO_CONTENT)
+        except Likes.DoesNotExist:
+            return Response({"error": "Like non trouvé"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class FollowsViewSet(viewsets.ModelViewSet):
     serializer_class = FollowsSerializer
 
