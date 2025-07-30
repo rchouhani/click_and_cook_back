@@ -22,6 +22,41 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         else: 
             return [IsAuthenticated()]
         
+    @action(detail=False, methods=['get'], url_path='username/(?P<username>[^/.]+)')
+    def by_username(self, request, username=None):
+        user = get_object_or_404(CustomUser, username=username)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'], url_path='profile')
+    def profile_with_stats(self, request, pk=None):
+        user = self.get_object()
+        
+        recipes_count = Recipes.objects.filter(user=user).count()
+        followers_count = Follows.objects.filter(followed_user=user).count()
+        following_count = Follows.objects.filter(following_user=user).count()
+        total_likes = Likes.objects.filter(recipe__user=user).count()
+        
+        is_followed = False
+        if request.user.is_authenticated:
+            is_followed = Follows.objects.filter(
+                following_user=request.user, 
+                followed_user=user
+            ).exists()
+        
+        serializer = self.get_serializer(user)
+        data = serializer.data
+        
+        data.update({
+            'recipes_count': recipes_count,
+            'followers_count': followers_count,
+            'following_count': following_count,
+            'total_likes_received': total_likes,
+            'is_followed': is_followed,
+        })
+        
+        return Response(data)
+        
 
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
