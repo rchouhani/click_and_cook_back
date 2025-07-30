@@ -156,7 +156,6 @@ class FollowsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-
         return Follows.objects.filter(following_user=user)
 
     def create(self, request):
@@ -178,3 +177,17 @@ class FollowsViewSet(viewsets.ModelViewSet):
          deleted_follow = Follows.objects.get(following_user=following_user, followed_user_id=followed_user)
          deleted_follow.delete()
          return Response({"Tu viens d'unfollow"}, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='user-followers/(?P<user_id>[^/.]+)')
+    def user_followers(self, request, user_id=None):
+        user = get_object_or_404(CustomUser, id=user_id)
+        
+        followers = Follows.objects.filter(followed_user=user).select_related('following_user')
+        
+        page = self.paginate_queryset(followers)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(followers, many=True)
+        return Response(serializer.data)
