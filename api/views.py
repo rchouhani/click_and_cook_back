@@ -124,37 +124,30 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
+        
+        origin = request.META.get('HTTP_ORIGIN')
+        print("Origin reçue :", origin)
+        
         username = request.data.get("username")
         password = request.data.get("password")
         
         user = authenticate(request, username=username, password=password)
         if user is None:
-                raise serializers.ValidationError("Email incorrect")
+            raise serializers.ValidationError("Nom d’utilisateur incorrect")
         
         if not user.check_password(password):
-            raise serializers.ValidationError("mot de passe incorrect")
+            raise serializers.ValidationError("Mot de passe incorrect")
         
         token, created = Token.objects.get_or_create(user=user)
-        response = Response ({
-                "auth_token": token.key,
-                "message": "Connexion Réussie",
-                "user": {
+        
+        return Response({
+            "auth_token": token.key,
+            "message": "Connexion réussie",
+            "user": {
                 "username": user.username,
                 "id": user.id,
-                }
+            }
         })
-        
-        response.set_cookie(
-            # "auth_token",
-            # token.key,
-            key='auth_token',
-            value=token.key,
-            max_age=3600,
-            httponly=True,
-            secure=False,
-            samesite="Lax"
-        )
-        return response
     
     
 class LogoutView(APIView):
