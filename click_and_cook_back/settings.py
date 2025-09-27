@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
      'localhost',
      '127.0.0.1',
      '.vercel.app',
+     'https://click-and-cook.vercel.app/',
 ]
 
 vercel_url = os.getenv("VERCEL_URL")
@@ -77,6 +78,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000",
     "https://click-and-cook-back.vercel.app",
+    "https://click-and-cook.vercel.app/",
 ]
 CORS_ALLOW_CREDENTIALS = False
 
